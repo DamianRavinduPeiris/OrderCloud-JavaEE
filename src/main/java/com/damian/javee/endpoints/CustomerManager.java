@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @WebServlet(urlPatterns = {"/customer-manager"})
@@ -47,7 +48,7 @@ public class CustomerManager extends HttpServlet {
         System.out.println("FETCH ALL TRIGGERED");
         setHeaders(resp);
         CustomerServiceIMPL cs = ServiceFactory.getService(ServiceTypes.CUSTOMER_SERVICE);
-        ArrayList<Customer_DTO> customerList = cs.getAll();
+        List<Customer_DTO> customerList = cs.getAll();
         System.out.println(customerList.isEmpty());
         if(!customerList.isEmpty()){
             Gson gson = GSONConfiguration.getInstance().getGSON();

@@ -8,6 +8,7 @@ import com.damian.javee.service.custom.OrderService;
 import com.damian.javee.util.Convertor;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class OrderServiceIMPL implements OrderService {
@@ -37,9 +38,9 @@ public class OrderServiceIMPL implements OrderService {
     }
 
     @Override
-    public ArrayList<Order_DTO> getAll() {
+    public List<Order_DTO> getAll() {
         OrderDAOIMPL dao = DAOFactory.getDAO(DAOTypes.ORDER_DAO);
-        return dao.getAll().isEmpty() ? null : Convertor.toOrderDTOList(dao.getAll());
+        return dao.getAll() == null ? null : Convertor.toOrderDTOList(dao.getAll());
     }
 
 

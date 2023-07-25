@@ -6,6 +6,7 @@ import com.damian.javee.util.FactoryConfiguration;
 import org.hibernate.Session;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class ItemDAOIMPL implements ItemDAO {
@@ -27,10 +28,14 @@ public class ItemDAOIMPL implements ItemDAO {
         try {
             session.save(item);
             session.getTransaction().commit();
+            session.close();
             return true;
         } catch (Exception e) {
-            session.getTransaction().rollback();
             setError_Info(e.getLocalizedMessage());
+            e.printStackTrace();
+            System.out.println(e.getLocalizedMessage());
+            session.getTransaction().rollback();
+
             return false;
         }
     }
@@ -42,6 +47,7 @@ public class ItemDAOIMPL implements ItemDAO {
         try {
             session.update(item);
             session.getTransaction().commit();
+            session.close();
             return true;
         } catch (Exception e) {
             session.getTransaction().rollback();
@@ -57,6 +63,7 @@ public class ItemDAOIMPL implements ItemDAO {
         try {
             session.createQuery("delete from Item where item_id = :s").setParameter("s", s).executeUpdate();
             session.getTransaction().commit();
+            session.close();
         } catch (Exception e) {
             session.getTransaction().rollback();
             setError_Info(e.getLocalizedMessage());
@@ -73,6 +80,7 @@ public class ItemDAOIMPL implements ItemDAO {
         session.beginTransaction();
         try {
             Item item = session.createQuery("from Item where item_name = :s", Item.class).setParameter("s", s).getSingleResult();
+            session.close();
             return Optional.of(item);
         } catch (Exception e) {
             session.getTransaction().rollback();
@@ -83,12 +91,13 @@ public class ItemDAOIMPL implements ItemDAO {
     }
 
     @Override
-    public ArrayList<Item> getAll() {
+    public List<Item> getAll() {
         Session session = FactoryConfiguration.getInstance().getSession();
         session.beginTransaction();
 
         try {
-            ArrayList<Item> itemsList = (ArrayList<Item>) session.createQuery("from Item ").list();
+            List<Item> itemsList = (ArrayList<Item>) session.createQuery("from Item ").list();
+            session.close();
             return itemsList;
 
         } catch (Exception e) {

@@ -6,6 +6,7 @@ import com.damian.javee.util.FactoryConfiguration;
 import org.hibernate.Session;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class CustomerDAOIMPL implements CustomerDAO {
@@ -29,6 +30,7 @@ public class CustomerDAOIMPL implements CustomerDAO {
         try {
             session.save(customer);
             session.getTransaction().commit();
+            session.close();
             return true;
         } catch (Exception e) {
             session.getTransaction().rollback();
@@ -48,6 +50,7 @@ public class CustomerDAOIMPL implements CustomerDAO {
         try {
             session.update(customer);
             session.getTransaction().commit();
+            session.close();
             return true;
         } catch (Exception e) {
             setErrorInfo(e.getLocalizedMessage());
@@ -62,6 +65,7 @@ public class CustomerDAOIMPL implements CustomerDAO {
         try {
             session.createQuery("delete from Customer where customer_id = :id").setParameter("id", id).executeUpdate();
             session.getTransaction().commit();
+            session.close();
             return true;
         } catch (Exception e) {
             session.getTransaction().rollback();
@@ -77,6 +81,7 @@ public class CustomerDAOIMPL implements CustomerDAO {
         session.beginTransaction();
         try {
             Customer customer = session.createQuery("from Customer where customer_name = :name", com.damian.javee.entity.Customer.class).setParameter("name", name).getSingleResult();
+            session.close();
             return Optional.of(customer);
 
         } catch (Exception e) {
@@ -91,13 +96,13 @@ public class CustomerDAOIMPL implements CustomerDAO {
     }
 
     @Override
-    public ArrayList<Customer> getAll() {
+    public List<Customer> getAll() {
         System.out.println("CustomerDAOIMPL.getAll() triggered");
         Session session = FactoryConfiguration.getInstance().getSession();
         session.beginTransaction();
 
         try {
-            ArrayList<Customer> customersList = (ArrayList<Customer>) session.createQuery("from Customer").list();
+            List<Customer> customersList = (ArrayList<Customer>) session.createQuery("from Customer").list();
             return customersList;
         } catch (Exception e) {
             session.getTransaction().rollback();

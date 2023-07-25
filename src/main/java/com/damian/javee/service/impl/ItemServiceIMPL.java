@@ -9,6 +9,7 @@ import com.damian.javee.service.custom.ItemService;
 import com.damian.javee.util.Convertor;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class ItemServiceIMPL implements ItemService {
@@ -39,7 +40,7 @@ public class ItemServiceIMPL implements ItemService {
     }
 
     @Override
-    public ArrayList<Item_Dto> getAll() {
+    public List<Item_Dto> getAll() {
         ItemDAOIMPL dao = DAOFactory.getDAO(DAOTypes.ITEM_DAO);
         return dao.getAll() == null ? null : Convertor.convertToItemDTOList(dao.getAll());
     }

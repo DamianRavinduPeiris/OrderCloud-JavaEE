@@ -9,6 +9,7 @@ import com.damian.javee.service.custom.CustomerService;
 import com.damian.javee.util.Convertor;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class CustomerServiceIMPL implements CustomerService {
@@ -44,7 +45,7 @@ public class CustomerServiceIMPL implements CustomerService {
     }
 
     @Override
-    public ArrayList<Customer_DTO> getAll() {
+    public List<Customer_DTO> getAll() {
         System.out.println("CustomerServiceIMPL.getAll() triggered");
         CustomerDAOIMPL dao = (CustomerDAOIMPL) DAOFactory.getDAO(DAOTypes.CUSTOMER_DAO);
         return dao.getAll() == null? null: Convertor.convertToCustomerDTOList(dao.getAll());

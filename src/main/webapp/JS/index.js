@@ -6,11 +6,20 @@ $(".oidCard").css("display", "none");
 var customerList;
 var itemList;
 
-function clearTables() {
-    $("#cTable tbody").empty();
-    $("#iTable tbody").empty();
-    $("#oTable tbody").empty();
+function clearItemTable() {
 
+    $("#iTable tbody").empty();
+
+
+}
+
+function clearCustomerTable() {
+    $("#cTable tbody").empty();
+
+}
+
+function clearOrderTable() {
+    $("#oTable tbody").empty();
 }
 
 function getAllOrders() {
@@ -19,14 +28,20 @@ function getAllOrders() {
         async: true,
         method: "GET",
         success: (r) => {
+            console.log(r)
             r.map((order) => {
+                console.log("item_qty after received " + order.item_qty)
+                console.log("item_price after received"+ order.item_price)
+                console.log("total after received"+ order.total)
+                /*Theres an issue in the item_price.(Since I used below approach.) */
+                let price = order.total / order.item_qty;
                 let row = "<tr>" +
                     "<td>" + order.order_id + "</td>" +
                     "<td>" + order.item_id + "</td>" +
                     "<td>" + order.customer_name + "</td>" +
                     "<td>" + order.item_name + "</td>" +
                     "<td>" + order.item_qty + "</td>" +
-                    "<td>" + order.item_price + "</td>" +
+                    "<td>" + price + "</td>" +
                     "<td>" + order.total + "</td>" +
                     +"</tr>"
                 $("#oTable").append(row);
@@ -133,6 +148,8 @@ $(document).ready(() => {
 });
 setOrderDetails();//Initial Load of the Orders.
 function setOrderDetails() {
+
+
     setTimeout(() => {
         customerList.map((c) => {
 
@@ -182,6 +199,7 @@ $("#itemManager").on("click", () => {
 
 
 });
+
 $("#addItemButton").on("click", () => {
     const fields = ["#iID", "#iName", "#iPrice", "#iQty"];
     validator(fields, null, "#itemForm")
@@ -203,15 +221,9 @@ $("#addItemButton").on("click", () => {
             data: itemJSON,
             async: true,
             success: (r) => {
-                clearTables();
+                clearItemTable();
                 getAllItems();
-                let row = "<tr>" +
-                    "<td>" + item.item_id + "</td>" +
-                    "<td>" + item.item_name + "</td>" +
-                    "<td>" + item.item_price + "</td>" +
-                    "<td>" + item.item_qty + "</td>" +
-                    +"</tr>"
-                $("#iTable").append(row);
+                $("#cfItems").click();
                 swal("Done!", "Item Saved Successfully!", "success");
 
             },
@@ -258,8 +270,9 @@ $("#addCustomerButton").on("click", () => {
                 data: customerJSON,
                 success: (s) => {
                     if (s === true) {
-                        clearTables();
+                        clearCustomerTable()
                         getAllCustomers();
+                        $("#cfAdd").click();//Clearing the fields.
                         swal("Done!", "Customer Saved Successfully!", "success");
                     } else {
                         swal("Error!", "An error occurred while saving the customer! : " + s, "error");
@@ -344,13 +357,12 @@ $("#searchItemButton").on("click", () => {
                 $("#iPrice").val(r.item_price);
                 $("#iQty").val(r.item_qty);
                 $("#iID").attr("disabled", "disabled");
-            } else {
-                swal("Error!", "Item Not Found!", "error");
             }
+
 
         },
         error: (e) => {
-            swal("Error!", "Something went wrong!" + e, "error");
+            swal("Error!", "Item Not Found!", "error");
         }
 
 
@@ -418,7 +430,7 @@ $("#updateCustomerButton").on("click", () => {
     let customerJSON = JSON.stringify(customer);
     AJAXRequest("http://localhost:8080/OrderCloud/api/v1/customer-manager", "PUT", "application/json", customerJSON, (s) => {
         if (s === true) {
-            clearTables();
+            clearCustomerTable()
             getAllCustomers();
             $("#cfAdd").click();//Clearing the fields.
             swal("Done!", "Customer Updated Successfully!", "success");
@@ -437,7 +449,7 @@ $("#deleteCustomerButton").on("click", () => {
         "application/json",
         null,
         function (s) {
-            clearTables();
+            clearCustomerTable()
             getAllCustomers();
             swal("Done!", "Customer Deleted Successfully!", "success");
             $("#cfAdd").click();//Clearing the fields.
@@ -459,6 +471,7 @@ $("#cfAdd").on("click", () => {
 
 });
 $("#cfItems").on("click", () => {
+
     $("#iID").val("");
     $("#iName").val("");
     $("#iPrice").val("");
@@ -487,8 +500,9 @@ $("#updateItemButton").on("click", () => {
         data: itemJSON,
         success: (r) => {
             if (r === true) {
-                clearTables();
+                clearItemTable();
                 getAllItems();
+                $("#cfItems").click();
                 swal("Done!", "Item Updated Successfully!", "success");
             } else {
                 swal("Error!", "An error occurred while updating the item! : ", "error");
@@ -511,8 +525,9 @@ $("#deleteItemButton").on("click", () => {
         method: "DELETE",
         async: true,
         success: () => {
-            clearTables();
+            clearItemTable();
             getAllItems();
+            $("#cfItems").click();
             swal("Done!", "Item Deleted Successfully!", "success");
         },
         error: (e) => {
@@ -573,7 +588,21 @@ $("#itemQty").on("mouseleave", () => {
 
 
 });
+$("#cfOrders").on("click", () => {
+    $("#orderId").val("");
+    $("#itemId").val("");
+    $("#customerName").val("");
+    $("#itemName").val("");
+    $("#itemQty").val("");
+    $("#itemPrice").val("");
+    $("#total").val("");
+    $("#orderId").removeAttr("disabled");
+    $("#itemId").removeAttr("disabled");
+    $("#itemPrice").removeAttr("disabled");
+    $("#customerId").val("");
 
+
+});
 
 function generateOrderId() {
     var currentDate = new Date();
@@ -624,10 +653,12 @@ $("#addOrderButton").on("click", () => {
         success: (r) => {
             if (r) {
                 swal("Done!", "Order Added Successfully!", "success");
-                clearTables();
+                $("#cfOrders").click();
+                clearItemTable();
+                clearOrderTable();
                 getAllItems();
                 getAllOrders();
-                $("#oTable").append(row);
+
             } else {
                 swal("error!", "An error occurred while adding the order! : ", "error");
             }
@@ -674,7 +705,7 @@ $("#oTable").on("click", "tr", (event) => {
 
     customerList.map((customer) => {
         if (customer_name === $("#customerName").val()) {
-            $("#customerId").val(customer.customer_id)
+           return  $("#customerId").val(customer.customer_id)
         }
 
     })
@@ -720,9 +751,11 @@ $("#updateOrderButton").on("click", () => {
             data: orderJSON,
             success: (s) => {
                 console.log(s);
-                clearTables();
-                getAllOrders();
+                $("#cfOrders").click();
+                clearItemTable();
+                clearOrderTable();
                 getAllItems();
+                getAllOrders();
                 swal("Done!", "Order Updated Successfully!", "success");
 
             },
@@ -751,7 +784,10 @@ $("#deleteOrderButton").on("click", () => {
             async: true,
             success: (r) => {
                 swal("Done.", "Order successfully deleted!", "success")
-                clearTables();
+                $("#cfOrders").click();
+                clearItemTable();
+                clearOrderTable();
+                getAllItems();
                 getAllOrders();
             },
             error: (e) => {

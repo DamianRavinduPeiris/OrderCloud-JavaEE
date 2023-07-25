@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @WebServlet(urlPatterns = {"/order-manager"})
@@ -38,11 +39,14 @@ public class OrderManager extends HttpServlet {
 
         setHeaders(resp);
         OrderServiceIMPL service = ServiceFactory.getService(ServiceTypes.ORDER_SERVICE);
-        ArrayList<Order_DTO> ordersList = service.getAll();
+        List<Order_DTO> ordersList = service.getAll();
 
         if (!ordersList.isEmpty()) {
-            ArrayList<JSONOrder> jsonOrdersList = new ArrayList<>();
+            List<JSONOrder> jsonOrdersList = new ArrayList<>();
             for (Order_DTO od : ordersList) {
+                System.out.println("QTY when sending : "+od.getItem_qty());
+                System.out.println("PRICE when sending: "+od.getItem_price());
+                System.out.println("TOTAL when sending: "+od.getTotal());
                 jsonOrdersList.add(new JSONOrder(od.getOrder_id(), od.getItem_id(), od.getCustomer_name(), od.getItem_name(), od.getItem_qty(), od.getItem_qty(), od.getTotal()));
 
             }

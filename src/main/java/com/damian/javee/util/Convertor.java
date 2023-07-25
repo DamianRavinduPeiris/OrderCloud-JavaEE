@@ -8,6 +8,7 @@ import com.damian.javee.entity.Item;
 import com.damian.javee.entity.OrderDetails;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Convertor {
     public static Customer convertToCustomer(Customer_DTO customer_dto) {
@@ -18,8 +19,8 @@ public class Convertor {
         return new Customer_DTO(search.getCustomer_id(), search.getCustomer_name(), search.getCustomer_address(), search.getCustomer_email());
     }
 
-    public static ArrayList<Customer_DTO> convertToCustomerDTOList(ArrayList<Customer> all) {
-        ArrayList<Customer_DTO> customer_dtos = new ArrayList<>();
+    public static List<Customer_DTO> convertToCustomerDTOList(List<Customer> all) {
+        List<Customer_DTO> customer_dtos = new ArrayList<>();
         for (Customer customer : all) {
             customer_dtos.add(new Customer_DTO(customer.getCustomer_id(), customer.getCustomer_name(), customer.getCustomer_address(), customer.getCustomer_email()));
         }
@@ -34,7 +35,7 @@ public class Convertor {
         return new Item_Dto(search.getItem_id(), search.getItem_name(), search.getItem_price(), search.getItem_qty());
     }
 
-    public static ArrayList<Item_Dto> convertToItemDTOList(ArrayList<Item> all) {
+    public static List<Item_Dto> convertToItemDTOList(List<Item> all) {
         ArrayList<Item_Dto> item_dtos = new ArrayList<>();
         for (Item item : all) {
             item_dtos.add(new Item_Dto(item.getItem_id(), item.getItem_name(), item.getItem_price(), item.getItem_qty()));
@@ -43,9 +44,7 @@ public class Convertor {
     }
 
     public static OrderDetails toOrder(Order_DTO orderDto) {
-        System.out.println("convertor : "+orderDto.getItem_qty());
-        System.out.println("toOrder()");
-        System.out.println("Customer : "+orderDto.getCustomer_id().toString());
+        System.out.println("price when converting "+orderDto.getItem_price());
         return new OrderDetails(orderDto.getOrder_id(), orderDto.getItem_id(), orderDto.getCustomer_name(), orderDto.getItem_name(), orderDto.getItem_qty(), orderDto.getItem_price(), orderDto.getTotal(), orderDto.getCustomer_id());
     }
 
@@ -54,14 +53,14 @@ public class Convertor {
     }
 
     //to order_dto list
-    public static ArrayList<Order_DTO> toOrderDTOList(ArrayList<OrderDetails> all) {
+    public static List<Order_DTO> toOrderDTOList(List<OrderDetails> all) {
         ArrayList<Order_DTO> order_dtos = new ArrayList<>();
         for (OrderDetails orderDetails : all) {
+            System.out.println("price when converting "+orderDetails.getItem_price());
             order_dtos.add(new Order_DTO(orderDetails.getOrder_id(), orderDetails.getItem_id(), orderDetails.getCustomer_name(), orderDetails.getItem_name(), orderDetails.getItem_qty(), orderDetails.getItem_price(), orderDetails.getTotal(), orderDetails.getCustomer_id()));
         }
         return order_dtos;
     }
-
 
 
 }

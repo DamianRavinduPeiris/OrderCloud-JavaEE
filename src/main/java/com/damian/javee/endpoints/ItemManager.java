@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @WebServlet(urlPatterns = {"/item-manager"})
@@ -47,7 +48,7 @@ public class ItemManager extends HttpServlet {
     private void fetchAll(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         setHeaders(resp);
         ItemServiceIMPL service = ServiceFactory.getService(ServiceTypes.ITEM_SERVICE);
-        ArrayList<Item_Dto> all = service.getAll();
+        List<Item_Dto> all = service.getAll();
         if (!all.isEmpty()) {
             String itemJSON = GSONConfiguration.getInstance().getGSON().toJson(all);
             try {

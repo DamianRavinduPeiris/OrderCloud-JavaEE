@@ -29,7 +29,7 @@ public class OrderDetails implements SuperEntity, Serializable {
     @NonNull
     private double total;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Customer customer_id;
 
 }

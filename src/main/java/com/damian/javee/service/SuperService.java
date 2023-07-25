@@ -3,6 +3,7 @@ package com.damian.javee.service;
 import com.damian.javee.dto.SuperDTO;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public interface SuperService<T extends SuperDTO,ID> {
@@ -14,5 +15,5 @@ public interface SuperService<T extends SuperDTO,ID> {
 
     Optional<T>search(ID id);
 
-    ArrayList<T> getAll();
+    List<T> getAll();
 }

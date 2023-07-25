@@ -3,6 +3,7 @@ package com.damian.javee.dao;
 import com.damian.javee.entity.SuperEntity;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public interface SuperDAO<T extends SuperEntity, ID> {
@@ -14,5 +15,5 @@ public interface SuperDAO<T extends SuperEntity, ID> {
 
     Optional<T> search(ID id);
 
-    ArrayList<T> getAll();
+    List<T> getAll();
 }
