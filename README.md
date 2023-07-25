@@ -1,8 +1,10 @@
-# <u>🛒 `OrderCloud` -  A Simple POS system built with  `Java-EE` `Servlets` and `AJAX`.<u>
+# <u>🛒 `OrderCloud.`  <u>
+
+## A Simple POS system built with  `Java-EE` `Servlets` and `AJAX`.
 
 
   
-# `OrderCloud` API Documentation.
+## `OrderCloud` API Documentation.
 
 ### ▶️ Managing `Customers , Items and Orders.`
 
