@@ -1,15 +1,16 @@
 package com.damian.javee.endpoints;
 
-import com.damian.javee.dao.impl.ItemDAOIMPL;
 import com.damian.javee.dao.impl.OrderDAOIMPL;
 import com.damian.javee.dto.Item_Dto;
 import com.damian.javee.dto.Order_DTO;
+import com.damian.javee.response.Response;
 import com.damian.javee.service.impl.ItemServiceIMPL;
 import com.damian.javee.service.impl.OrderServiceIMPL;
 import com.damian.javee.service.util.JSONOrder;
 import com.damian.javee.service.util.ServiceFactory;
 import com.damian.javee.service.util.ServiceTypes;
 import com.damian.javee.util.GSONConfiguration;
+import com.damian.javee.util.ResponseConfiguration;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -54,7 +55,12 @@ public class OrderManager extends HttpServlet {
             }
 
         } else {
-            resp.getWriter().println(OrderDAOIMPL.getErrorInfo());
+            /*Getting the error msg + status to an object.*/
+            Response response = ResponseConfiguration.getInstance().getResponse();
+            response.setResponseMessage(OrderDAOIMPL.getErrorInfo());
+            response.setStatus(false);
+            /*Converting it to a JSON object and sending as the response.*/
+            resp.getWriter().println(GSONConfiguration.getInstance().getGSON().toJson(response));
         }
     }
 
@@ -72,16 +78,29 @@ public class OrderManager extends HttpServlet {
                 System.out.println("item is present");
                 item.get().setItem_qty(item.get().getItem_qty() - orderDto.getItem_qty());
                 if (is.update(item.get())) {
-                    System.out.println("Item qty updated");
-                    resp.getWriter().println(true);
+                    /*Getting the error msg + status to an object.*/
+                    Response response = ResponseConfiguration.getInstance().getResponse();
+                    response.setStatus(true);
+                    /*Converting it to a JSON object and sending as the response.*/
+                    resp.getWriter().println(GSONConfiguration.getInstance().getGSON().toJson(response));
                 } else {
-                    resp.getWriter().println(ItemDAOIMPL.getError_Info());
+                    /*Getting the error msg + status to an object.*/
+                    Response response = ResponseConfiguration.getInstance().getResponse();
+                    response.setResponseMessage(OrderDAOIMPL.getErrorInfo());
+                    response.setStatus(false);
+                    /*Converting it to a JSON object and sending as the response.*/
+                    resp.getWriter().println(GSONConfiguration.getInstance().getGSON().toJson(response));
                 }
             }
 
 
         } else {
-            resp.getWriter().println(OrderDAOIMPL.getErrorInfo());
+            /*Getting the error msg + status to an object.*/
+            Response response = ResponseConfiguration.getInstance().getResponse();
+            response.setResponseMessage(OrderDAOIMPL.getErrorInfo());
+            response.setStatus(false);
+            /*Converting it to a JSON object and sending as the response.*/
+            resp.getWriter().println(GSONConfiguration.getInstance().getGSON().toJson(response));
 
 
         }
@@ -105,15 +124,28 @@ public class OrderManager extends HttpServlet {
                 item.get().setItem_qty(item.get().getItem_qty() - orderDto.getItem_qty());
                 if (is.update(item.get())) {
                     System.out.println("Item qty updated");
-                    resp.getWriter().println(true);
+                    /*Getting the error msg + status to an object.*/
+                    Response response = ResponseConfiguration.getInstance().getResponse();
+                    response.setStatus(true);
+                    /*Converting it to a JSON object and sending as the response.*/
+                    resp.getWriter().println(GSONConfiguration.getInstance().getGSON().toJson(response));
                 } else {
-                    resp.getWriter().println(ItemDAOIMPL.getError_Info());
+                    /*Getting the error msg + status to an object.*/
+                    Response response = ResponseConfiguration.getInstance().getResponse();
+                    response.setResponseMessage(OrderDAOIMPL.getErrorInfo());
+                    response.setStatus(false);
+                    /*Converting it to a JSON object and sending as the response.*/
+                    resp.getWriter().println(GSONConfiguration.getInstance().getGSON().toJson(response));
                 }
             }
 
         } else {
-            resp.getWriter().println(false);
-            System.out.println(OrderDAOIMPL.getErrorInfo());
+            /*Getting the error msg + status to an object.*/
+            Response response = ResponseConfiguration.getInstance().getResponse();
+            response.setResponseMessage(OrderDAOIMPL.getErrorInfo());
+            response.setStatus(false);
+            /*Converting it to a JSON object and sending as the response.*/
+            resp.getWriter().println(GSONConfiguration.getInstance().getGSON().toJson(response));
         }
 
 
@@ -124,9 +156,18 @@ public class OrderManager extends HttpServlet {
 
         OrderServiceIMPL os = ServiceFactory.getService(ServiceTypes.ORDER_SERVICE);
         if (os.delete(req.getParameter("order_id"))) {
-            resp.getWriter().println(true);
+            /*Getting the error msg + status to an object.*/
+            Response response = ResponseConfiguration.getInstance().getResponse();
+            response.setStatus(true);
+            /*Converting it to a JSON object and sending as the response.*/
+            resp.getWriter().println(GSONConfiguration.getInstance().getGSON().toJson(response));
         } else {
-            resp.getWriter().println(OrderDAOIMPL.getErrorInfo());
+            /*Getting the error msg + status to an object.*/
+            Response response = ResponseConfiguration.getInstance().getResponse();
+            response.setResponseMessage(OrderDAOIMPL.getErrorInfo());
+            response.setStatus(false);
+            /*Converting it to a JSON object and sending as the response.*/
+            resp.getWriter().println(GSONConfiguration.getInstance().getGSON().toJson(response));
         }
     }
 
