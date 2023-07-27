@@ -2,10 +2,12 @@ package com.damian.javee.endpoints;
 
 import com.damian.javee.dao.impl.CustomerDAOIMPL;
 import com.damian.javee.dto.Customer_DTO;
+import com.damian.javee.response.Response;
 import com.damian.javee.service.impl.CustomerServiceIMPL;
 import com.damian.javee.service.util.ServiceFactory;
 import com.damian.javee.service.util.ServiceTypes;
 import com.damian.javee.util.GSONConfiguration;
+import com.damian.javee.util.ResponseConfiguration;
 import com.google.gson.Gson;
 
 import javax.servlet.ServletException;
@@ -22,7 +24,6 @@ import java.util.Optional;
 public class CustomerManager extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("DO GET TRIGGERED" + req.getParameter("name"));
         if (req.getParameter("name").equals("fetchAll")) {
             fetchAll(req, resp);
             return;
@@ -36,8 +37,8 @@ public class CustomerManager extends HttpServlet {
             String customerJSON = gson.toJson(cust.get());
             resp.getWriter().println(customerJSON);
         } else {
-            System.out.println("CustomerManager.doGet: " + CustomerDAOIMPL.getErrorInfo());
-            resp.getWriter().println(CustomerDAOIMPL.getErrorInfo());
+            ResponseConfiguration.getInstance().getResponse().setResponseMessage(CustomerDAOIMPL.getErrorInfo());
+            resp.getWriter().println(GSONConfiguration.getInstance().getGSON().toJson(ResponseConfiguration.getInstance().getResponse()));
         }
 
 
@@ -48,17 +49,27 @@ public class CustomerManager extends HttpServlet {
 
         CustomerServiceIMPL cs = ServiceFactory.getService(ServiceTypes.CUSTOMER_SERVICE);
         List<Customer_DTO> customerList = cs.getAll();
-        System.out.println(customerList.isEmpty());
-        if (!customerList.isEmpty()) {
+
+        if (customerList != null) {
             Gson gson = GSONConfiguration.getInstance().getGSON();
             String customerJSON = gson.toJson(customerList);
             try {
                 resp.getWriter().println(customerJSON);
+
             } catch (IOException e) {
                 System.out.println("An error occurred in Customer-Manager endpoint while fetching  customers : " + e.getLocalizedMessage());
             }
         } else {
-            resp.getWriter().println(CustomerDAOIMPL.getErrorInfo());
+            System.out.println("else is executed");
+
+            /*Getting the error msg + status to an object.*/
+            Response response = ResponseConfiguration.getInstance().getResponse();
+            response.setResponseMessage(CustomerDAOIMPL.getErrorInfo());
+            System.out.println("here's the error again : " + response.getResponseMessage());
+            response.setStatus(false);
+
+            /*Converting it to a JSON object and sending as the response.*/
+            resp.getWriter().println(GSONConfiguration.getInstance().getGSON().toJson(response));
         }
 
 

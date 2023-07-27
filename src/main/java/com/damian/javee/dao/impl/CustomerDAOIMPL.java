@@ -22,7 +22,6 @@ public class CustomerDAOIMPL implements CustomerDAO {
 
     @Override
     public boolean add(Customer customer) {
-        System.out.println("CustomerDAOIMPL.add() triggered");
         System.out.println(customer.toString());
         Session session = FactoryConfiguration.getInstance().getSession();
         System.out.println(session.isOpen());
@@ -33,9 +32,8 @@ public class CustomerDAOIMPL implements CustomerDAO {
             session.close();
             return true;
         } catch (Exception e) {
-            session.getTransaction().rollback();
-            System.out.println(e.getLocalizedMessage());
             setErrorInfo(e.getLocalizedMessage());
+            session.getTransaction().rollback();
             return false;
 
         }
@@ -54,6 +52,7 @@ public class CustomerDAOIMPL implements CustomerDAO {
             return true;
         } catch (Exception e) {
             setErrorInfo(e.getLocalizedMessage());
+            session.getTransaction().rollback();
             return false;
         }
     }
@@ -68,9 +67,8 @@ public class CustomerDAOIMPL implements CustomerDAO {
             session.close();
             return true;
         } catch (Exception e) {
-            session.getTransaction().rollback();
             setErrorInfo(e.getLocalizedMessage());
-            e.printStackTrace();
+            session.getTransaction().rollback();
             return false;
         }
     }
@@ -85,8 +83,8 @@ public class CustomerDAOIMPL implements CustomerDAO {
             return Optional.of(customer);
 
         } catch (Exception e) {
-            session.getTransaction().rollback();
             setErrorInfo(e.getLocalizedMessage());
+            session.getTransaction().rollback();
             return Optional.empty();
 
 
@@ -97,7 +95,6 @@ public class CustomerDAOIMPL implements CustomerDAO {
 
     @Override
     public List<Customer> getAll() {
-        System.out.println("CustomerDAOIMPL.getAll() triggered");
         Session session = FactoryConfiguration.getInstance().getSession();
         session.beginTransaction();
 
@@ -105,8 +102,9 @@ public class CustomerDAOIMPL implements CustomerDAO {
             List<Customer> customersList = (ArrayList<Customer>) session.createQuery("from Customer").list();
             return customersList;
         } catch (Exception e) {
-            session.getTransaction().rollback();
             setErrorInfo(e.getLocalizedMessage());
+            session.getTransaction().rollback();
+
         }
         return null;
 

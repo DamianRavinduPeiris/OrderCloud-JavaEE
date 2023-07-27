@@ -27,12 +27,14 @@ function getAllOrders() {
         url: "http://localhost:8080/OrderCloud/api/v1/order-manager?order_id=" + "fetchAll",
         async: true,
         method: "GET",
+        dataType: "json",
+        contentType: "application.json",
         success: (r) => {
             console.log(r)
             r.map((order) => {
                 console.log("item_qty after received " + order.item_qty)
-                console.log("item_price after received"+ order.item_price)
-                console.log("total after received"+ order.total)
+                console.log("item_price after received" + order.item_price)
+                console.log("total after received" + order.total)
                 /*Theres an issue in the item_price.(Since I used below approach.) */
                 let price = order.total / order.item_qty;
                 let row = "<tr>" +
@@ -66,24 +68,32 @@ function getAllCustomers() {
         url: "http://localhost:8080/OrderCloud/api/v1/customer-manager?name=" + "fetchAll",
         method: "GET",
         async: true,
-        success: ((s) => {
-            customerList = s;
-            s.map((customer) => {
-                let row = "<tr>" +
-                    "<td>" + customer.customer_id + "</td>" +
-                    "<td>" + customer.customer_name + "</td>" +
-                    "<td>" + customer.customer_address + "</td>" +
-                    "<td>" + customer.customer_email + "</td>" +
-                    +"</tr>";
+        dataType: "json",
+        contentType: "application.json",
+        success: ((response) => {
+            if (response.status !== false) {
+                customerList = response;
+                response.map((customer) => {
+                    let row = "<tr>" +
+                        "<td>" + customer.customer_id + "</td>" +
+                        "<td>" + customer.customer_name + "</td>" +
+                        "<td>" + customer.customer_address + "</td>" +
+                        "<td>" + customer.customer_email + "</td>" +
+                        +"</tr>";
 
-                $("#cTable").append(row);
+                    $("#cTable").append(row);
 
-            });
+                });
+            } else {
+                swal("Error!", response.responseMessage, "error")
+            }
+
 
         }),
         error: ((e) => {
+            console.log(e)
 
-            swal("Error!", "An error occurred while loading the customers! : " + e, "error");
+            swal("Error!", "An error occurred while loading the customers! : " + e.responseMessage, "error");
         }),
 
 
@@ -97,6 +107,9 @@ function getAllItems() {
         url: "http://localhost:8080/OrderCloud/api/v1/item-manager?item_name=" + "fetchAll",
         method: "GET",
         async: true,
+        dataType: "json",
+        contentType: "application.json",
+
         success: ((s) => {
             itemList = s;
 
@@ -248,17 +261,6 @@ $("#addCustomerButton").on("click", () => {
                 "customer_address": $("#cAddress").val(),
                 "customer_email": $("#cEmail").val(),
             }
-            let row = "<tr>" +
-                "<td>" + $("#cID").val() + "</td>" +
-                "<td>" + $("#cName").val() + "</td>" +
-                "<td>" + $("#cAddress").val() + "</td>" +
-                "<td>" + $("#cEmail").val() + "</td>" +
-                +"</tr>";
-            $("#cTable").append(row);
-            $("#cID").val("");
-            $("#cName").val("");
-            $("#cAddress").val("");
-            $("#cEmail").val("");
 
             let customerJSON = JSON.stringify(customer);
             $.ajax({
@@ -377,20 +379,24 @@ $("#searchCustomerButton").on("click", () => {
         url: "http://localhost:8080/OrderCloud/api/v1/customer-manager?name=" + name,
         method: "GET",
         async: true,
-        success: (s) => {
-            if (s.customer_id) {
-                $("#cID").val(s.customer_id);
-                $("#cName").val(s.customer_name);
-                $("#cAddress").val(s.customer_address);
-                $("#cEmail").val(s.customer_email);
+        dataType: "json",
+        contentType: "application.json",
+        success: (respose) => {
+            if (respose.status !== false) {
+                $("#cID").val(respose.customer_id);
+                $("#cName").val(respose.customer_name);
+                $("#cAddress").val(respose.customer_address);
+                $("#cEmail").val(respose.customer_email);
                 /*CID is disabled.*/
                 $("#cID").attr("disabled", "disabled");
+            } else {
+                swal("Customer Not found!", respose.responseMessage, "error")
             }
 
 
         },
-        error: (e) => {
-            swal("Error!", "Customer Not Found!", "error");
+        error: (jqXHR, textStatus, errorThrown) => {
+            swal("Error!", "An error occurred while sending the request!" + errorThrown, "error");
         }
 
 
@@ -705,7 +711,7 @@ $("#oTable").on("click", "tr", (event) => {
 
     customerList.map((customer) => {
         if (customer_name === $("#customerName").val()) {
-           return  $("#customerId").val(customer.customer_id)
+            return $("#customerId").val(customer.customer_id)
         }
 
     })
