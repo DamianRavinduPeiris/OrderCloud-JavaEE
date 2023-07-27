@@ -2,10 +2,12 @@ package com.damian.javee.endpoints;
 
 import com.damian.javee.dao.impl.ItemDAOIMPL;
 import com.damian.javee.dto.Item_Dto;
+import com.damian.javee.response.Response;
 import com.damian.javee.service.impl.ItemServiceIMPL;
 import com.damian.javee.service.util.ServiceFactory;
 import com.damian.javee.service.util.ServiceTypes;
 import com.damian.javee.util.GSONConfiguration;
+import com.damian.javee.util.ResponseConfiguration;
 import com.google.gson.Gson;
 
 import javax.servlet.ServletException;
@@ -37,7 +39,12 @@ public class ItemManager extends HttpServlet {
             resp.getWriter().println(json);
 
         } else {
-            resp.getWriter().println(ItemDAOIMPL.getError_Info());
+            /*Getting the error msg + status to an object.*/
+            Response response = ResponseConfiguration.getInstance().getResponse();
+            response.setResponseMessage(ItemDAOIMPL.getError_Info());
+            response.setStatus(false);
+            /*Converting it to a JSON object and sending as the response.*/
+            resp.getWriter().println(GSONConfiguration.getInstance().getGSON().toJson(response));
         }
 
 
@@ -54,7 +61,12 @@ public class ItemManager extends HttpServlet {
                 System.out.println("An error occurred in Item-Manager endpoint while fetching items : " + e.getLocalizedMessage());
             }
         } else {
-            resp.getWriter().println(ItemDAOIMPL.getError_Info());
+            /*Getting the error msg + status to an object.*/
+            Response response = ResponseConfiguration.getInstance().getResponse();
+            response.setResponseMessage(ItemDAOIMPL.getError_Info());
+            response.setStatus(false);
+            /*Converting it to a JSON object and sending as the response.*/
+            resp.getWriter().println(GSONConfiguration.getInstance().getGSON().toJson(response));
         }
 
     }
@@ -66,9 +78,18 @@ public class ItemManager extends HttpServlet {
         Gson gson = GSONConfiguration.getInstance().getGSON();
         Item_Dto itemDto = gson.fromJson(req.getReader(), Item_Dto.class);
         if (service.add(itemDto)) {
-            resp.getWriter().println(true);
+            /*Getting the error msg + status to an object.*/
+            Response response = ResponseConfiguration.getInstance().getResponse();
+            response.setStatus(true);
+            /*Converting it to a JSON object and sending as the response.*/
+            resp.getWriter().println(GSONConfiguration.getInstance().getGSON().toJson(response));
         } else {
-            resp.getWriter().println(ItemDAOIMPL.getError_Info());
+            /*Getting the error msg + status to an object.*/
+            Response response = ResponseConfiguration.getInstance().getResponse();
+            response.setResponseMessage(ItemDAOIMPL.getError_Info());
+            response.setStatus(false);
+            /*Converting it to a JSON object and sending as the response.*/
+            resp.getWriter().println(GSONConfiguration.getInstance().getGSON().toJson(response));
         }
 
     }
@@ -77,10 +98,19 @@ public class ItemManager extends HttpServlet {
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         ItemServiceIMPL service = ServiceFactory.getService(ServiceTypes.ITEM_SERVICE);
         if (service.delete(req.getParameter("item_id"))) {
-            resp.getWriter().println(true);
+            /*Getting the error msg + status to an object.*/
+            Response response = ResponseConfiguration.getInstance().getResponse();
+            response.setStatus(true);
+            /*Converting it to a JSON object and sending as the response.*/
+            resp.getWriter().println(GSONConfiguration.getInstance().getGSON().toJson(response));
 
         } else {
-            resp.getWriter().println(ItemDAOIMPL.getError_Info());
+            /*Getting the error msg + status to an object.*/
+            Response response = ResponseConfiguration.getInstance().getResponse();
+            response.setResponseMessage(ItemDAOIMPL.getError_Info());
+            response.setStatus(false);
+            /*Converting it to a JSON object and sending as the response.*/
+            resp.getWriter().println(GSONConfiguration.getInstance().getGSON().toJson(response));
         }
     }
 
@@ -88,9 +118,18 @@ public class ItemManager extends HttpServlet {
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         ItemServiceIMPL service = ServiceFactory.getService(ServiceTypes.ITEM_SERVICE);
         if (service.update(GSONConfiguration.getInstance().getGSON().fromJson(req.getReader(), Item_Dto.class))) {
-            resp.getWriter().println(true);
+            /*Getting the error msg + status to an object.*/
+            Response response = ResponseConfiguration.getInstance().getResponse();
+            response.setStatus(true);
+            /*Converting it to a JSON object and sending as the response.*/
+            resp.getWriter().println(GSONConfiguration.getInstance().getGSON().toJson(response));
         } else {
-            resp.getWriter().println(ItemDAOIMPL.getError_Info());
+            /*Getting the error msg + status to an object.*/
+            Response response = ResponseConfiguration.getInstance().getResponse();
+            response.setResponseMessage(ItemDAOIMPL.getError_Info());
+            response.setStatus(false);
+            /*Converting it to a JSON object and sending as the response.*/
+            resp.getWriter().println(GSONConfiguration.getInstance().getGSON().toJson(response));
         }
 
     }

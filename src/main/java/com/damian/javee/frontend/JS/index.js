@@ -110,21 +110,25 @@ function getAllItems() {
         async: true,
         dataType: "json",
         contentType: "application.json",
+        success: ((response) => {
+            if (response.staus !== false) {
+                itemList = response;
 
-        success: ((s) => {
-            itemList = s;
+                response.map((item) => {
+                    let row = "<tr>" +
+                        "<td>" + item.item_id + "</td>" +
+                        "<td>" + item.item_name + "</td>" +
+                        "<td>" + item.item_price + "</td>" +
+                        "<td>" + item.item_qty + "</td>" +
+                        +"</tr>";
 
-            s.map((item) => {
-                let row = "<tr>" +
-                    "<td>" + item.item_id + "</td>" +
-                    "<td>" + item.item_name + "</td>" +
-                    "<td>" + item.item_price + "</td>" +
-                    "<td>" + item.item_qty + "</td>" +
-                    +"</tr>";
+                    $("#iTable").append(row);
 
-                $("#iTable").append(row);
+                });
+            } else {
+                swal("Error!", "Something went wrong while fetching all items! : " + response.responseMessage, "error")
+            }
 
-            });
 
         }),
         error: ((e) => {
@@ -234,15 +238,22 @@ $("#addItemButton").on("click", () => {
             },
             data: itemJSON,
             async: true,
-            success: (r) => {
-                clearItemTable();
-                getAllItems();
-                $("#cfItems").click();
-                swal("Done!", "Item Saved Successfully!", "success");
+            dataType: "json",
+            contentType: "application.json",
+            success: (response) => {
+                if (response.status !== false) {
+                    clearItemTable();
+                    getAllItems();
+                    $("#cfItems").click();
+                    swal("Done!", "Item Saved Successfully!", "success");
+                } else {
+                    swal("Error!", "Something went wrong while saving the item! : " + response.responseMessage, "error")
+                }
+
 
             },
             error: (e) => {
-                swal("Error!", "An error occurred while saving the Item! : " + e, "error");
+                swal("Error!", "An error occurred while requesting to the server! : " + e, "error");
             }
 
 
@@ -275,7 +286,7 @@ $("#addCustomerButton").on("click", () => {
                 dataType: "json",
                 contentType: "application.json",
                 success: (response) => {
-                    if (response!==false) {
+                    if (response !== false) {
                         clearCustomerTable()
                         getAllCustomers();
                         $("#cfAdd").click();//Clearing the fields.
@@ -358,20 +369,23 @@ $("#searchItemButton").on("click", () => {
         async: true,
         dataType: "json",
         contentType: "application.json",
-        success: (r) => {
-            console.log(r)
-            if (r.item_id) {
-                $("#iID").val(r.item_id);
-                $("#iName").val(r.item_name);
-                $("#iPrice").val(r.item_price);
-                $("#iQty").val(r.item_qty);
+        success: (response) => {
+            if (response.status !== false) {
+
+                $("#iID").val(response.item_id);
+                $("#iName").val(response.item_name);
+                $("#iPrice").val(response.item_price);
+                $("#iQty").val(response.item_qty);
                 $("#iID").attr("disabled", "disabled");
+
+            } else {
+                swal("Error!", "Something went wrong while fetching the item! :" + response.responseMessage, "error")
             }
 
 
         },
         error: (e) => {
-            swal("Error!", "Item Not Found!", "error");
+            swal("Error!", "Something went wrong while requesting to the server! : " + e, "error");
         }
 
 
@@ -411,23 +425,6 @@ $("#searchCustomerButton").on("click", () => {
 
 
 });
-
-function AJAXRequest(endpoint, method, dType, info, successCallBack, errorCallBack) {
-    $.ajax({
-        url: endpoint,
-        async: true,
-        dataType: "json",
-        contentType: "application.json",
-        type: method,
-        headers: dType,
-        data: info,
-        success: successCallBack,
-        error: errorCallBack,
-    });
-
-
-}
-
 $("#dashboard").on("click", () => {
     $("#customerContainer").css("display", "none");
     $(".time").css("display", "flex");
@@ -444,33 +441,30 @@ $("#updateCustomerButton").on("click", () => {
     }
     let customerJSON = JSON.stringify(customer);
     $.ajax({
-       url : "http://localhost:8080/OrderCloud/api/v1/customer-manager",
-       method : "PUT",
-       async : true,
-       data: customerJSON,
+        url: "http://localhost:8080/OrderCloud/api/v1/customer-manager",
+        method: "PUT",
+        async: true,
+        data: customerJSON,
         headers: {
             "Content-Type": "application/json"
         },
-        dataType : "json",
-        contentType : "application.json",
-        success : (response)=>{
-          if(response.status!==false){
-              swal("Done!","Customer Successfully updated!","success")
-              clearCustomerTable();
-              getAllCustomers();
-              $("#cfAdd").click();
-          }else{
-           swal("Error!","Something went wrong while updating the customer!"+response.responseMessage,"error")
-          }
-
+        dataType: "json",
+        contentType: "application.json",
+        success: (response) => {
+            if (response.status !== false) {
+                swal("Done!", "Customer Successfully updated!", "success")
+                clearCustomerTable();
+                getAllCustomers();
+                $("#cfAdd").click();
+            } else {
+                swal("Error!", "Something went wrong while updating the customer!" + response.responseMessage, "error")
+            }
 
 
         },
-        error : (error)=>{
-           swal("Error!","Something went wrong while performing the request!"+error,"error")
+        error: (error) => {
+            swal("Error!", "Something went wrong while performing the request!" + error, "error")
         }
-
-
 
 
     });
@@ -481,27 +475,24 @@ $("#deleteCustomerButton").on("click", () => {
     let id = $("#cID").val();
     console.log(id)
     $.ajax({
-       url : "http://localhost:8080/OrderCloud/api/v1/customer-manager?cId=" + id,
-       method : "DELETE",
-       async : true,
-       dataType : "json",
-       contentType : "application.json",
-       success : (response)=>{
-           if(response.status!==false){
-               swal("Done!","Customer successfully deleted!","success")
-               clearCustomerTable();
-               getAllCustomers();
-               $("#cfAdd").click();
-           }else{
-               swal("Error!","Something went wrong while deleting customer! : "+response.responseMessage,"error")
-           }
-       },
-       error : (error)=>{
-           swal("Error!","Something went wrong when performing request to the server! : "+e,"error")
-       }
-
-
-
+        url: "http://localhost:8080/OrderCloud/api/v1/customer-manager?cId=" + id,
+        method: "DELETE",
+        async: true,
+        dataType: "json",
+        contentType: "application.json",
+        success: (response) => {
+            if (response.status !== false) {
+                swal("Done!", "Customer successfully deleted!", "success")
+                clearCustomerTable();
+                getAllCustomers();
+                $("#cfAdd").click();
+            } else {
+                swal("Error!", "Something went wrong while deleting customer! : " + response.responseMessage, "error")
+            }
+        },
+        error: (error) => {
+            swal("Error!", "Something went wrong when performing request to the server! : " + e, "error")
+        }
 
 
     });
@@ -545,19 +536,21 @@ $("#updateItemButton").on("click", () => {
             "Content-Type": "application/json"
         },
         data: itemJSON,
-        success: (r) => {
-            if (r === true) {
+        dataType : "json",
+        contentType : "application.json",
+        success: (response) => {
+            if (response.status!==false) {
                 clearItemTable();
                 getAllItems();
                 $("#cfItems").click();
                 swal("Done!", "Item Updated Successfully!", "success");
             } else {
-                swal("Error!", "An error occurred while updating the item! : ", "error");
+                swal("Error!", "An error occurred while updating the item! : "+response.responseMessage, "error");
             }
 
         },
         error: (e) => {
-            swal("Error!", "An error occurred while updating the item! : " + e, "error");
+            swal("Error!", "An error occurred while requesting to the server! : " + e, "error");
         }
 
 
@@ -571,14 +564,21 @@ $("#deleteItemButton").on("click", () => {
         url: "http://localhost:8080/OrderCloud/api/v1/item-manager?item_id=" + $("#iID").val(),
         method: "DELETE",
         async: true,
-        success: () => {
-            clearItemTable();
-            getAllItems();
-            $("#cfItems").click();
-            swal("Done!", "Item Deleted Successfully!", "success");
+        dataType : "json",
+        contentType : "application.json",
+        success: (response) => {
+            if(response.status!==false){
+                clearItemTable();
+                getAllItems();
+                $("#cfItems").click();
+                swal("Done!", "Item Deleted Successfully!", "success");
+            }else{
+                swal("Error!", "Something went wrong while deleting the item! : "+response.responseMessage, "error");
+            }
+
         },
         error: (e) => {
-            swal("Error!", "An error occurred while deleting the item! : " + e, "error");
+            swal("Error!", "An error occurred while requesting to the server ! : " + e, "error");
         }
 
 
