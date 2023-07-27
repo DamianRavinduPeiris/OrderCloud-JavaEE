@@ -37,8 +37,13 @@ public class CustomerManager extends HttpServlet {
             String customerJSON = gson.toJson(cust.get());
             resp.getWriter().println(customerJSON);
         } else {
-            ResponseConfiguration.getInstance().getResponse().setResponseMessage(CustomerDAOIMPL.getErrorInfo());
-            resp.getWriter().println(GSONConfiguration.getInstance().getGSON().toJson(ResponseConfiguration.getInstance().getResponse()));
+            /*Getting the error msg + status to an object.*/
+            Response response = ResponseConfiguration.getInstance().getResponse();
+            response.setResponseMessage(CustomerDAOIMPL.getErrorInfo());
+            System.out.println("here's the error again : " + response.getResponseMessage());
+            response.setStatus(false);
+            /*Converting it to a JSON object and sending as the response.*/
+            resp.getWriter().println(GSONConfiguration.getInstance().getGSON().toJson(response));
         }
 
 
@@ -60,8 +65,6 @@ public class CustomerManager extends HttpServlet {
                 System.out.println("An error occurred in Customer-Manager endpoint while fetching  customers : " + e.getLocalizedMessage());
             }
         } else {
-            System.out.println("else is executed");
-
             /*Getting the error msg + status to an object.*/
             Response response = ResponseConfiguration.getInstance().getResponse();
             response.setResponseMessage(CustomerDAOIMPL.getErrorInfo());
@@ -87,9 +90,18 @@ public class CustomerManager extends HttpServlet {
         CustomerServiceIMPL cs = ServiceFactory.getService(ServiceTypes.CUSTOMER_SERVICE);
         boolean b = cs.add(customer);
         if (b) {
-            resp.getWriter().println(b);
+            Response response = ResponseConfiguration.getInstance().getResponse();
+            response.setStatus(true);
+            resp.getWriter().write(GSONConfiguration.getInstance().getGSON().toJson(response));
         } else {
-            resp.getWriter().println(CustomerDAOIMPL.getErrorInfo());
+            /*Getting the error msg + status to an object.*/
+            Response response = ResponseConfiguration.getInstance().getResponse();
+            response.setResponseMessage(CustomerDAOIMPL.getErrorInfo());
+            System.out.println("here's the error again : " + response.getResponseMessage());
+            response.setStatus(false);
+
+            /*Converting it to a JSON object and sending as the response.*/
+            resp.getWriter().println(GSONConfiguration.getInstance().getGSON().toJson(response));
         }
 
 
@@ -104,10 +116,19 @@ public class CustomerManager extends HttpServlet {
         Customer_DTO customerDto = gson.fromJson(customerJSON, Customer_DTO.class);
         CustomerServiceIMPL service = ServiceFactory.getService(ServiceTypes.CUSTOMER_SERVICE);
         if (service.update(customerDto)) {
-            resp.getWriter().println(true);
+            Response response = ResponseConfiguration.getInstance().getResponse();
+            response.setStatus(true);
+            resp.getWriter().write(GSONConfiguration.getInstance().getGSON().toJson(response));
 
         } else {
-            resp.getWriter().println(CustomerDAOIMPL.getErrorInfo());
+            /*Getting the error msg + status to an object.*/
+            Response response = ResponseConfiguration.getInstance().getResponse();
+            response.setResponseMessage(CustomerDAOIMPL.getErrorInfo());
+            System.out.println("here's the error again : " + response.getResponseMessage());
+            response.setStatus(false);
+
+            /*Converting it to a JSON object and sending as the response.*/
+            resp.getWriter().println(GSONConfiguration.getInstance().getGSON().toJson(response));
         }
 
     }
@@ -117,10 +138,19 @@ public class CustomerManager extends HttpServlet {
 
         CustomerServiceIMPL cs = ServiceFactory.getService(ServiceTypes.CUSTOMER_SERVICE);
         if (cs.delete(req.getParameter("cId"))) {
-            resp.getWriter().println(true);
+            Response response = ResponseConfiguration.getInstance().getResponse();
+            response.setStatus(true);
+            resp.getWriter().write(GSONConfiguration.getInstance().getGSON().toJson(response));
 
         } else {
-            resp.getWriter().write(CustomerDAOIMPL.getErrorInfo());
+            /*Getting the error msg + status to an object.*/
+            Response response = ResponseConfiguration.getInstance().getResponse();
+            response.setResponseMessage(CustomerDAOIMPL.getErrorInfo());
+            System.out.println("here's the error again : " + response.getResponseMessage());
+            response.setStatus(false);
+
+            /*Converting it to a JSON object and sending as the response.*/
+            resp.getWriter().println(GSONConfiguration.getInstance().getGSON().toJson(response));
         }
     }
 

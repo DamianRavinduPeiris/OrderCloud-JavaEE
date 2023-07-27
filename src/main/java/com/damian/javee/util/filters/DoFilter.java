@@ -35,7 +35,6 @@ public class DoFilter implements Filter {
         //In order to send the request to the relevant servlet, we need to call filterChain.doFilter() method.
         //If not , the request will not be sent to the relevant servlet..
         filterChain.doFilter(servletRequest, servletResponse);
-        servletResponse.getWriter().write("This is from the filter!");
 
 
     }

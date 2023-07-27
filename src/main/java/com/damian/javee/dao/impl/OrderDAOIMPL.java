@@ -100,7 +100,7 @@ public class OrderDAOIMPL implements OrderDAO {
         session.beginTransaction();
         try {
             ArrayList<OrderDetails> orderDetails = (ArrayList<OrderDetails>) session.createNativeQuery("SELECT * FROM OrderDetails", OrderDetails.class).list();
-            System.out.println("Freshly fetched");
+
             for(OrderDetails o : orderDetails){
                 System.out.println(o.getItem_price());
             }

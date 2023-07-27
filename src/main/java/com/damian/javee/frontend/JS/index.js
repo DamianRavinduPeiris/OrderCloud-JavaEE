@@ -71,6 +71,7 @@ function getAllCustomers() {
         dataType: "json",
         contentType: "application.json",
         success: ((response) => {
+            console.log(response)
             if (response.status !== false) {
                 customerList = response;
                 response.map((customer) => {
@@ -270,14 +271,17 @@ $("#addCustomerButton").on("click", () => {
                     "Content-Type": "application/json"
                 },
                 data: customerJSON,
-                success: (s) => {
-                    if (s === true) {
+                async: true,
+                dataType: "json",
+                contentType: "application.json",
+                success: (response) => {
+                    if (response!==false) {
                         clearCustomerTable()
                         getAllCustomers();
                         $("#cfAdd").click();//Clearing the fields.
                         swal("Done!", "Customer Saved Successfully!", "success");
                     } else {
-                        swal("Error!", "An error occurred while saving the customer! : " + s, "error");
+                        swal("Error!", "An error occurred while saving the customer! : " + response.responseMessage, "error");
                     }
 
                 },
@@ -352,7 +356,10 @@ $("#searchItemButton").on("click", () => {
         url: "http://localhost:8080/OrderCloud/api/v1/item-manager?item_name=" + item_name,
         method: "GET",
         async: true,
+        dataType: "json",
+        contentType: "application.json",
         success: (r) => {
+            console.log(r)
             if (r.item_id) {
                 $("#iID").val(r.item_id);
                 $("#iName").val(r.item_name);
@@ -381,16 +388,16 @@ $("#searchCustomerButton").on("click", () => {
         async: true,
         dataType: "json",
         contentType: "application.json",
-        success: (respose) => {
-            if (respose.status !== false) {
-                $("#cID").val(respose.customer_id);
-                $("#cName").val(respose.customer_name);
-                $("#cAddress").val(respose.customer_address);
-                $("#cEmail").val(respose.customer_email);
+        success: (response) => {
+            if (response.status !== false) {
+                $("#cID").val(response.customer_id);
+                $("#cName").val(response.customer_name);
+                $("#cAddress").val(response.customer_address);
+                $("#cEmail").val(response.customer_email);
                 /*CID is disabled.*/
                 $("#cID").attr("disabled", "disabled");
             } else {
-                swal("Customer Not found!", respose.responseMessage, "error")
+                swal("Customer Not found!", response.responseMessage, "error")
             }
 
 
@@ -409,6 +416,8 @@ function AJAXRequest(endpoint, method, dType, info, successCallBack, errorCallBa
     $.ajax({
         url: endpoint,
         async: true,
+        dataType: "json",
+        contentType: "application.json",
         type: method,
         headers: dType,
         data: info,
@@ -434,15 +443,36 @@ $("#updateCustomerButton").on("click", () => {
         "customer_email": $("#cEmail").val(),
     }
     let customerJSON = JSON.stringify(customer);
-    AJAXRequest("http://localhost:8080/OrderCloud/api/v1/customer-manager", "PUT", "application/json", customerJSON, (s) => {
-        if (s === true) {
-            clearCustomerTable()
-            getAllCustomers();
-            $("#cfAdd").click();//Clearing the fields.
-            swal("Done!", "Customer Updated Successfully!", "success");
-        } else {
-            swal("Error!", "An error occurred while updating the customer! : ", "error");
+    $.ajax({
+       url : "http://localhost:8080/OrderCloud/api/v1/customer-manager",
+       method : "PUT",
+       async : true,
+       data: customerJSON,
+        headers: {
+            "Content-Type": "application/json"
+        },
+        dataType : "json",
+        contentType : "application.json",
+        success : (response)=>{
+          if(response.status!==false){
+              swal("Done!","Customer Successfully updated!","success")
+              clearCustomerTable();
+              getAllCustomers();
+              $("#cfAdd").click();
+          }else{
+           swal("Error!","Something went wrong while updating the customer!"+response.responseMessage,"error")
+          }
+
+
+
+        },
+        error : (error)=>{
+           swal("Error!","Something went wrong while performing the request!"+error,"error")
         }
+
+
+
+
     });
 
 
@@ -450,20 +480,31 @@ $("#updateCustomerButton").on("click", () => {
 $("#deleteCustomerButton").on("click", () => {
     let id = $("#cID").val();
     console.log(id)
-    AJAXRequest("http://localhost:8080/OrderCloud/api/v1/customer-manager?cId=" + id,
-        "DELETE",
-        "application/json",
-        null,
-        function (s) {
-            clearCustomerTable()
-            getAllCustomers();
-            swal("Done!", "Customer Deleted Successfully!", "success");
-            $("#cfAdd").click();//Clearing the fields.
-        },
-        function () {
-            swal("Error!", "An error occurred while deleting the customer! : ", "error");
-        }
-    )
+    $.ajax({
+       url : "http://localhost:8080/OrderCloud/api/v1/customer-manager?cId=" + id,
+       method : "DELETE",
+       async : true,
+       dataType : "json",
+       contentType : "application.json",
+       success : (response)=>{
+           if(response.status!==false){
+               swal("Done!","Customer successfully deleted!","success")
+               clearCustomerTable();
+               getAllCustomers();
+               $("#cfAdd").click();
+           }else{
+               swal("Error!","Something went wrong while deleting customer! : "+response.responseMessage,"error")
+           }
+       },
+       error : (error)=>{
+           swal("Error!","Something went wrong when performing request to the server! : "+e,"error")
+       }
+
+
+
+
+
+    });
 
 
 });
