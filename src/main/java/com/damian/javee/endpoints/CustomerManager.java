@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +28,7 @@ public class CustomerManager extends HttpServlet {
             return;
 
         }
-        setHeaders(resp);
+
         CustomerServiceIMPL service = ServiceFactory.getService(ServiceTypes.CUSTOMER_SERVICE);
         Optional<Customer_DTO> cust = service.search(req.getParameter("name"));
         if (cust.isPresent()) {
@@ -46,11 +45,11 @@ public class CustomerManager extends HttpServlet {
 
     private void fetchAll(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         System.out.println("FETCH ALL TRIGGERED");
-        setHeaders(resp);
+
         CustomerServiceIMPL cs = ServiceFactory.getService(ServiceTypes.CUSTOMER_SERVICE);
         List<Customer_DTO> customerList = cs.getAll();
         System.out.println(customerList.isEmpty());
-        if(!customerList.isEmpty()){
+        if (!customerList.isEmpty()) {
             Gson gson = GSONConfiguration.getInstance().getGSON();
             String customerJSON = gson.toJson(customerList);
             try {
@@ -58,10 +57,9 @@ public class CustomerManager extends HttpServlet {
             } catch (IOException e) {
                 System.out.println("An error occurred in Customer-Manager endpoint while fetching  customers : " + e.getLocalizedMessage());
             }
-        }else{
+        } else {
             resp.getWriter().println(CustomerDAOIMPL.getErrorInfo());
         }
-
 
 
     }
@@ -69,7 +67,7 @@ public class CustomerManager extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         System.out.println("DO POST TRIGGERED");
-        setHeaders(resp);
+
         Gson gson = GSONConfiguration.getInstance().getGSON();
         BufferedReader reader = req.getReader();
         String json = reader.readLine();
@@ -88,7 +86,7 @@ public class CustomerManager extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        setHeaders(resp);
+
         Gson gson = GSONConfiguration.getInstance().getGSON();
         BufferedReader reader = req.getReader();
         String customerJSON = reader.readLine();
@@ -105,7 +103,7 @@ public class CustomerManager extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        setHeaders(resp);
+
         CustomerServiceIMPL cs = ServiceFactory.getService(ServiceTypes.CUSTOMER_SERVICE);
         if (cs.delete(req.getParameter("cId"))) {
             resp.getWriter().println(true);
@@ -115,14 +113,5 @@ public class CustomerManager extends HttpServlet {
         }
     }
 
-
-    public void setHeaders(HttpServletResponse resp) {
-        resp.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
-        resp.setHeader("Access-Control-Allow-Methods", "POST");
-        resp.setHeader("Access-Control-Allow-Headers", "Content-Type");
-        resp.setHeader("Content-Type", "application/json");
-
-
-    }
 
 }

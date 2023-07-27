@@ -2,17 +2,13 @@ package com.damian.javee.endpoints;
 
 import com.damian.javee.dao.impl.ItemDAOIMPL;
 import com.damian.javee.dao.impl.OrderDAOIMPL;
-import com.damian.javee.dto.Customer_DTO;
 import com.damian.javee.dto.Item_Dto;
 import com.damian.javee.dto.Order_DTO;
-import com.damian.javee.service.impl.CustomerServiceIMPL;
 import com.damian.javee.service.impl.ItemServiceIMPL;
 import com.damian.javee.service.impl.OrderServiceIMPL;
 import com.damian.javee.service.util.JSONOrder;
 import com.damian.javee.service.util.ServiceFactory;
 import com.damian.javee.service.util.ServiceTypes;
-import com.damian.javee.util.Convertor;
-import com.damian.javee.util.FactoryConfiguration;
 import com.damian.javee.util.GSONConfiguration;
 
 import javax.servlet.ServletException;
@@ -37,16 +33,15 @@ public class OrderManager extends HttpServlet {
 
     private void fetchAll(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-        setHeaders(resp);
         OrderServiceIMPL service = ServiceFactory.getService(ServiceTypes.ORDER_SERVICE);
         List<Order_DTO> ordersList = service.getAll();
 
         if (!ordersList.isEmpty()) {
             List<JSONOrder> jsonOrdersList = new ArrayList<>();
             for (Order_DTO od : ordersList) {
-                System.out.println("QTY when sending : "+od.getItem_qty());
-                System.out.println("PRICE when sending: "+od.getItem_price());
-                System.out.println("TOTAL when sending: "+od.getTotal());
+                System.out.println("QTY when sending : " + od.getItem_qty());
+                System.out.println("PRICE when sending: " + od.getItem_price());
+                System.out.println("TOTAL when sending: " + od.getTotal());
                 jsonOrdersList.add(new JSONOrder(od.getOrder_id(), od.getItem_id(), od.getCustomer_name(), od.getItem_name(), od.getItem_qty(), od.getItem_qty(), od.getTotal()));
 
             }
@@ -65,7 +60,6 @@ public class OrderManager extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        setHeaders(resp);
 
         OrderServiceIMPL service = ServiceFactory.getService(ServiceTypes.ORDER_SERVICE);
         /*Setting the customer object to order.*/
@@ -97,10 +91,10 @@ public class OrderManager extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        setHeaders(resp);
+
         OrderServiceIMPL os = ServiceFactory.getService(ServiceTypes.ORDER_SERVICE);
         Order_DTO orderDto = GSONConfiguration.getInstance().getGSON().fromJson(req.getReader().readLine(), Order_DTO.class);
-        System.out.println("iqty in odto "+orderDto.getItem_qty());
+        System.out.println("iqty in odto " + orderDto.getItem_qty());
         /*Updating the order.*/
         if (os.update(orderDto)) {
             /*Updating the item QTY..*/
@@ -127,23 +121,16 @@ public class OrderManager extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        setHeaders(resp);
-        OrderServiceIMPL os = (OrderServiceIMPL) ServiceFactory.getService(ServiceTypes.ORDER_SERVICE);
-        if(os.delete(req.getParameter("order_id"))){
+
+        OrderServiceIMPL os = ServiceFactory.getService(ServiceTypes.ORDER_SERVICE);
+        if (os.delete(req.getParameter("order_id"))) {
             resp.getWriter().println(true);
-        }else{
+        } else {
             resp.getWriter().println(OrderDAOIMPL.getErrorInfo());
         }
     }
 
-    public void setHeaders(HttpServletResponse resp) {
-        resp.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
-        resp.setHeader("Access-Control-Allow-Methods", "POST,PATCH,GET,PUT,DELETE,OPTIONS");
-        resp.setHeader("Access-Control-Allow-Headers", "Content-Type");
-        resp.setHeader("Content-Type", "application/json");
 
-
-    }
 }
 
 

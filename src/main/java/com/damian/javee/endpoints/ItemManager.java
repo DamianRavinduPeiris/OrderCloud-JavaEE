@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,7 +27,6 @@ public class ItemManager extends HttpServlet {
             return;
 
         }
-        setHeaders(resp);
         System.out.println("fetching item");
 
         ItemServiceIMPL service = ServiceFactory.getService(ServiceTypes.ITEM_SERVICE);
@@ -46,7 +44,6 @@ public class ItemManager extends HttpServlet {
     }
 
     private void fetchAll(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        setHeaders(resp);
         ItemServiceIMPL service = ServiceFactory.getService(ServiceTypes.ITEM_SERVICE);
         List<Item_Dto> all = service.getAll();
         if (!all.isEmpty()) {
@@ -64,7 +61,7 @@ public class ItemManager extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        setHeaders(resp);
+
         ItemServiceIMPL service = ServiceFactory.getService(ServiceTypes.ITEM_SERVICE);
         Gson gson = GSONConfiguration.getInstance().getGSON();
         Item_Dto itemDto = gson.fromJson(req.getReader(), Item_Dto.class);
@@ -78,7 +75,6 @@ public class ItemManager extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        setHeaders(resp);
         ItemServiceIMPL service = ServiceFactory.getService(ServiceTypes.ITEM_SERVICE);
         if (service.delete(req.getParameter("item_id"))) {
             resp.getWriter().println(true);
@@ -90,7 +86,6 @@ public class ItemManager extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        setHeaders(resp);
         ItemServiceIMPL service = ServiceFactory.getService(ServiceTypes.ITEM_SERVICE);
         if (service.update(GSONConfiguration.getInstance().getGSON().fromJson(req.getReader(), Item_Dto.class))) {
             resp.getWriter().println(true);
@@ -100,12 +95,5 @@ public class ItemManager extends HttpServlet {
 
     }
 
-    public void setHeaders(HttpServletResponse resp) {
-        resp.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
-        resp.setHeader("Access-Control-Allow-Methods", "POST");
-        resp.setHeader("Access-Control-Allow-Headers", "Content-Type");
-        resp.setHeader("Content-Type", "application/json");
 
-
-    }
 }
