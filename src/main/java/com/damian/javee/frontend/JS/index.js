@@ -363,6 +363,9 @@ function validator(fields, email, formId) {
 
 $("#searchItemButton").on("click", () => {
     let item_name = $("#iName").val();
+    if(!item_name){
+        return swal("Error!","Item name cannot be empty!","error")
+    }
     $.ajax({
         url: "http://localhost:8080/OrderCloud/api/v1/item-manager?item_name=" + item_name,
         method: "GET",
@@ -396,6 +399,9 @@ $("#searchItemButton").on("click", () => {
 
 $("#searchCustomerButton").on("click", () => {
     let name = $("#cName").val();
+    if(!$("#cName").val()){
+       return  swal("Error!","Customer name cannot be empty!","error")
+    }
     $.ajax({
         url: "http://localhost:8080/OrderCloud/api/v1/customer-manager?name=" + name,
         method: "GET",
@@ -433,6 +439,9 @@ $("#dashboard").on("click", () => {
 });
 
 $("#updateCustomerButton").on("click", () => {
+    if(!$("#cID").val()){
+        return swal("Error!","Search a customer first!","error")
+    }
     var customer = {
         "customer_id": $("#cID").val(),
         "customer_name": $("#cName").val(),
@@ -472,6 +481,9 @@ $("#updateCustomerButton").on("click", () => {
 
 });
 $("#deleteCustomerButton").on("click", () => {
+    if(!$("#cID").val()){
+        return swal("Error!","Search a customer first!","error")
+    }
     let id = $("#cID").val();
     console.log(id)
     $.ajax({
@@ -519,6 +531,9 @@ $("#cfItems").on("click", () => {
 });
 
 $("#updateItemButton").on("click", () => {
+    if(!$("#iID").val()){
+        return swal("Error!","Search an item first!","error")
+    }
     let item = {
         item_id: $("#iID").val(),
         item_name: $("#iName").val(),
@@ -560,6 +575,9 @@ $("#updateItemButton").on("click", () => {
 });
 
 $("#deleteItemButton").on("click", () => {
+    if(!$("#iID").val()){
+        return swal("Error!","Search an item first!","error")
+    }
     $.ajax({
         url: "http://localhost:8080/OrderCloud/api/v1/item-manager?item_id=" + $("#iID").val(),
         method: "DELETE",
