@@ -754,6 +754,36 @@ $(".oidCard").on("click", "#closeButton", () => {
     $(".oidCard").css("display", "none");
 });
 
+$("#cTable").on("click", "tr", (event) => {
+    let customer_id = $(event.currentTarget).find("td:eq(0)").text();
+    let customer_name = $(event.currentTarget).find("td:eq(1)").text();
+    let customer_address = $(event.currentTarget).find("td:eq(2)").text();
+    let customer_email = $(event.currentTarget).find("td:eq(3)").text();
+    $("#cID").val(customer_id);
+    $("#cName").val(customer_name);
+    $("#cAddress").val(customer_address);
+    $("#cEmail").val(customer_email);
+
+    $("#cID").attr("disabled", "disabled");
+
+
+});
+
+
+$("#iTable").on("click", "tr", (event) => {
+    let item_id = $(event.currentTarget).find("td:eq(0)").text();
+    let item_name = $(event.currentTarget).find("td:eq(1)").text();
+    let item_price = $(event.currentTarget).find("td:eq(2)").text();
+    let item_qty = $(event.currentTarget).find("td:eq(3)").text();
+
+    $("#iID").val(item_id);
+    $("#iName").val(item_name);
+    $("#iPrice").val(item_price);
+    $("#iQty").val(item_qty);
+
+
+});
+
 $("#oTable").on("click", "tr", (event) => {
 
     let order_id = $(event.currentTarget).find("td:eq(0)").text();
