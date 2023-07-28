@@ -616,6 +616,7 @@ $("#customerName").on("mouseleave", () => {
     customerList.map((c) => {
         if (c.customer_name === $("#customerName").val()) {
             $("#customerId").val(c.customer_id);
+            $("#customerEmail").val(c.customer_email)
         }
 
 
@@ -666,6 +667,7 @@ $("#cfOrders").on("click", () => {
     $("#itemQty").val("");
     $("#itemPrice").val("");
     $("#total").val("");
+    $("#customerEmail").val("");
     $("#orderId").removeAttr("disabled");
     $("#itemId").removeAttr("disabled");
     $("#itemPrice").removeAttr("disabled");
@@ -726,6 +728,7 @@ $("#addOrderButton").on("click", () => {
         success: (response) => {
             if (response.status !== false) {
                 swal("Done!", "Order Added Successfully!", "success");
+                sendEmail($("#customerId").val(), $("#customerName").val(), $("#total").val());
                 $("#cfOrders").click();
                 clearItemTable();
                 clearOrderTable();
@@ -807,7 +810,8 @@ $("#oTable").on("click", "tr", (event) => {
     $("#itemPrice").attr("disabled", "disabled");
 
     customerList.map((customer) => {
-        if (customer_name === $("#customerName").val()) {
+        if (customer.customer_name === $("#customerName").val()) {
+            $("#customerEmail").val(customer.customer_email)
             return $("#customerId").val(customer.customer_id)
         }
 
@@ -920,3 +924,23 @@ $("#deleteOrderButton").on("click", () => {
 });
 
 
+function  sendEmail(customerId, customerName, totalInInvoice) {
+    // Prepare the email parameters
+    const templateParams = {
+        message: "Your order summary as per below : ",
+        customer_id: customerId,
+        owner: "orderCloud",
+        customer_name: customerName,
+        total_in_invoice: totalInInvoice,
+        customer_email: $("#customerEmail").val(),
+        reply_to: "drpeiris3@gmail.com"
+    };
+
+    // Send the email using EmailJS.
+    emailjs.send('service_kvc2vmj', 'template_k5h2r7h', templateParams)
+        .then(function (response) {
+            swal("Done!", "Email sent successfully!💡", "success");
+        }, function (error) {
+            swal("OOPS!", "Email sending failed!🚨 : "+error, "error");
+        });
+}
